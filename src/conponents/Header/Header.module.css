@@ -1,0 +1,21 @@
+.header {
+    background-color: #222;
+    padding: 12px 24px;
+  }
+  
+  .nav {
+    display: flex;
+    gap: 24px;
+  }
+  
+  .nav a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 4px 8px;
+  }
+  
+  .active {
+    border-bottom: 2px solid #ff9800;
+  }
+  
