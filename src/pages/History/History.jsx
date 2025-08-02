@@ -46,7 +46,7 @@ const History = () => {
           onClick={() => setIsFilterOpen(true)}
           aria-label="絞り込みを開く"
         >
-          絞り込み
+          &#9776; {/* ← ここが三本線アイコン */}
         </button>
       </header>
 

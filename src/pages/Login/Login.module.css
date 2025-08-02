@@ -1,0 +1,45 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f8f8f8;
+  }
+  
+  .title {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .googleButton {
+    background-color: #4285f4;
+    color: white;
+    padding: 0.75rem 2rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-bottom: 1rem;
+    transition: 0.3s;
+  }
+  
+  .googleButton:hover {
+    background-color: #3367d6;
+  }
+  
+  .signUpButton {
+    background-color: #aaa;
+    color: white;
+    padding: 0.6rem 1.8rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  .signUpButton:hover {
+    background-color: #888;
+  }
+  
