@@ -10,6 +10,7 @@ import Login from './pages/Login/Login';
 import SignUp from './pages/SignUp/SignUp';
 import UIDsearch from './pages/UIDsearch/UIDsearch';
 import FriendList from './pages/FriendList/FriendList';
+import Profile from './pages/Profile/Profile';
 import { MemoProvider } from './context/MemoContext';
 import styles from './App.module.css';
 
@@ -38,6 +39,7 @@ const App = () => {
             <Route path="/sign-up" element={<SignUp />} />
             <Route path="/UIDsearch" element={<UIDsearch />} />
             <Route path="/FriendList" element={<FriendList />} />
+            <Route path="/Profile" element={<Profile />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </main>

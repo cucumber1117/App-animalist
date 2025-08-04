@@ -6,7 +6,24 @@ import Filter from '../Filter/Filter';
 
 const formatDate = (dateString) => {
   const date = new Date(dateString);
-  return date.toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' });
+  return date.toLocaleDateString('ja-JP', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+};
+
+const formatFilterLabel = (filters) => {
+  const year = [...filters.selectedYears].join(', ');
+  const month = [...filters.selectedMonths].map((m) => `${m}月`).join(', ');
+  const rating = [...filters.selectedRatings].map((r) => `⭐️${r}`).join(', ');
+
+  const labels = [];
+  if (year) labels.push(year);
+  if (month) labels.push(month);
+  if (rating) labels.push(rating);
+
+  return labels.length > 0 ? `絞り込み中: ${labels.join(' / ')}` : '';
 };
 
 const History = () => {
@@ -28,14 +45,20 @@ const History = () => {
     const year = memoDate.getFullYear();
     const month = memoDate.getMonth() + 1;
 
-    const yearMatch = filters.selectedYears.size === 0 || filters.selectedYears.has(year);
-    const monthMatch = filters.selectedMonths.size === 0 || filters.selectedMonths.has(month);
-    const ratingMatch = filters.selectedRatings.size === 0 || filters.selectedRatings.has(memo.rating);
+    const yearMatch =
+      filters.selectedYears.size === 0 || filters.selectedYears.has(year);
+    const monthMatch =
+      filters.selectedMonths.size === 0 || filters.selectedMonths.has(month);
+    const ratingMatch =
+      filters.selectedRatings.size === 0 ||
+      filters.selectedRatings.has(memo.rating);
 
     return titleMatch && yearMatch && monthMatch && ratingMatch;
   });
 
-  const sortedMemos = [...filteredMemos].sort((a, b) => new Date(b.date) - new Date(a.date));
+  const sortedMemos = [...filteredMemos].sort(
+    (a, b) => new Date(b.date) - new Date(a.date)
+  );
 
   return (
     <div className={styles.container}>
@@ -43,12 +66,16 @@ const History = () => {
         <h1 className={styles.title}>すべての履歴</h1>
         <button
           className={styles.filterButton}
-          onClick={() => setIsFilterOpen(true)}
-          aria-label="絞り込みを開く"
+          onClick={() => setIsFilterOpen((prev) => !prev)}
+          aria-label="絞り込みを開閉"
         >
-          &#9776; {/* ← ここが三本線アイコン */}
+          <span className={styles.hamburger}></span>
         </button>
       </header>
+
+      {formatFilterLabel(filters) && (
+        <div className={styles.filterLabel}>{formatFilterLabel(filters)}</div>
+      )}
 
       {sortedMemos.length === 0 ? (
         <p>まだメモがありません。</p>
@@ -61,11 +88,9 @@ const History = () => {
               <div><strong>メモ:</strong> {memo.note}</div>
               <div><strong>日付:</strong> {formatDate(memo.date)}</div>
               <div className={styles.buttonGroup}>
-                <Link to={`/edit/${memo.id}`} className={styles.editLink}>
-                  編集
-                </Link>
+                <Link to={`/edit/${memo.id}`} className={styles.actionButton}>編集</Link>
                 <button
-                  className={styles.deleteButton}
+                  className={styles.actionButton}
                   onClick={() => {
                     if (window.confirm('本当に削除しますか？')) {
                       deleteMemo(memo.id);
@@ -81,8 +106,14 @@ const History = () => {
       )}
 
       {isFilterOpen && (
-        <div className={styles.modalOverlay} onClick={() => setIsFilterOpen(false)}>
-          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+        <div
+          className={styles.modalOverlay}
+          onClick={() => setIsFilterOpen(false)}
+        >
+          <div
+            className={styles.modalContent}
+            onClick={(e) => e.stopPropagation()}
+          >
             <Filter
               filters={filters}
               setFilters={setFilters}

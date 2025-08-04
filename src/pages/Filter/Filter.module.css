@@ -1,73 +1,119 @@
 .container {
-  padding: 16px;
+  padding: 20px;
+  background-color: #f9faff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .section {
-  margin-bottom: 16px;
+  margin-bottom: 20px;
+}
+
+.section label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 8px;
+  color: #333;
 }
 
 .input {
   width: 100%;
-  padding: 8px;
+  padding: 10px 14px;
   font-size: 1rem;
+  border: 1.8px solid #ccc;
+  border-radius: 10px;
+  transition: border-color 0.3s ease;
+}
+
+.input:focus {
+  border-color: #007bff;
+  outline: none;
+  background-color: #fff;
 }
 
 .options {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 12px;
   margin-top: 8px;
 }
 
 .optionButton {
-  padding: 6px 12px;
-  border: 1px solid #ccc;
+  padding: 8px 18px;
+  font-size: 1rem;
+  border: 2px solid #007bff;
   background-color: white;
+  color: #007bff;
   cursor: pointer;
-  border-radius: 8px;
-  transition: background-color 0.2s;
+  border-radius: 16px;
+  user-select: none;
+  transition: all 0.25s ease;
+  min-width: 56px;
+  text-align: center;
+  box-shadow: 0 1px 3px rgb(0 123 255 / 0.25);
 }
 
 .optionButton:hover {
-  background-color: #ddd;
+  background-color: #e6f0ff;
+  border-color: #0056b3;
+  color: #0056b3;
 }
 
 .selected {
-  background-color: #007bff;
+  background-color: #0056b3;
+  border-color: #003d80;
   color: white;
-  border-color: #0056b3;
+  box-shadow: 0 4px 10px rgb(0 86 179 / 0.6);
+  font-weight: 700;
 }
 
 .buttons {
   display: flex;
-  gap: 8px;
-  margin-top: 24px;
+  gap: 12px;
+  margin-top: 30px;
   justify-content: flex-end;
+}
+
+.applyButton,
+.resetButton,
+.closeButton {
+  padding: 12px 26px;
+  font-weight: 600;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  user-select: none;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .applyButton {
   background-color: #007bff;
   color: white;
-  border: none;
-  padding: 10px 18px;
-  border-radius: 10px;
-  cursor: pointer;
+}
+
+.applyButton:hover {
+  background-color: #0056b3;
+  box-shadow: 0 6px 12px rgba(0,86,179,0.6);
 }
 
 .resetButton {
   background-color: #6c757d;
   color: white;
-  border: none;
-  padding: 10px 18px;
-  border-radius: 10px;
-  cursor: pointer;
+}
+
+.resetButton:hover {
+  background-color: #545b62;
+  box-shadow: 0 6px 12px rgba(84,91,98,0.6);
 }
 
 .closeButton {
   background-color: #dc3545;
   color: white;
-  border: none;
-  padding: 10px 18px;
-  border-radius: 10px;
-  cursor: pointer;
+}
+
+.closeButton:hover {
+  background-color: #a71d2a;
+  box-shadow: 0 6px 12px rgba(167,29,42,0.6);
 }

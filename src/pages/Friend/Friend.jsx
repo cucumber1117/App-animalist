@@ -11,7 +11,7 @@ const Friend = ({ friendUid }) => {
   useEffect(() => {
     if (!friendUid) {
       console.log('friendUidがないため処理中断');
-      return; // ここで処理中断して描画もなしに
+      return;
     }
 
     const fetchFriendData = async () => {
@@ -42,8 +42,7 @@ const Friend = ({ friendUid }) => {
   }, [friendUid]);
 
   if (loading) return <p>読み込み中...</p>;
-
-  if (!friendData && !loading) return null;
+  if (!friendData) return null;
 
   return (
     <div className={styles.container}>
@@ -62,6 +61,8 @@ const Friend = ({ friendUid }) => {
 
       {showDetails && (
         <div className={styles.details}>
+          <p><strong>UID:</strong> {friendData.customUID || '未設定'}</p>
+          <p><strong>ステータスメッセージ:</strong> {friendData.statusMessage || 'なし'}</p>
           <p><strong>好きなアニメ:</strong> {friendData.favoriteAnime || '未登録'}</p>
           <p><strong>最近見たアニメ:</strong></p>
           {friendData.recentAnimes && friendData.recentAnimes.length > 0 ? (

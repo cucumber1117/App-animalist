@@ -1,46 +1,108 @@
-/* History.module.css */
-
 .container {
-  padding: 20px;
   max-width: 700px;
   margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .title {
   font-size: 1.8rem;
   font-weight: bold;
+  margin: 0;
 }
 
 .filterButton {
-  font-size: 1.8rem;
   background: none;
   border: none;
   cursor: pointer;
+  padding: 8px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ハンバーガーメニューの3本線 */
+.hamburger {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background-color: #333;
+  position: relative;
+}
+.hamburger::before,
+.hamburger::after {
+  content: '';
+  position: absolute;
+  width: 22px;
+  height: 2px;
+  background-color: #333;
+  left: 0;
+}
+.hamburger::before {
+  top: -7px;
+}
+.hamburger::after {
+  top: 7px;
+}
+
+.filterLabel {
+  margin-bottom: 10px;
+  font-weight: 600;
+  color: #333;
+  font-size: 1rem;
 }
 
 .list {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
 .listItem {
   padding: 12px;
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid #ddd;
 }
 
-.editLink {
-  color: blue;
-  text-decoration: underline;
+.buttonGroup {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+.actionButton {
+  padding: 6px 14px;
+  border: none;
+  background-color: #2196f3;
+  color: white;
+  font-weight: 600;
+  border-radius: 4px;
   cursor: pointer;
-  margin-top: 6px;
-  display: inline-block;
+  text-decoration: none;
+  text-align: center;
+  user-select: none;
+  transition: background-color 0.2s ease;
+}
+
+.actionButton:hover {
+  background-color: #1976d2;
+}
+
+/* 削除ボタンだけ色を変えたい場合 */
+.actionButton:nth-child(2) {
+  background-color: #e53935;
+}
+
+.actionButton:nth-child(2):hover {
+  background-color: #c62828;
 }
 
 /* モーダル背景 */
@@ -59,31 +121,11 @@
 
 /* モーダル本体 */
 .modalContent {
-  background-color: #fff;
-  border-radius: 12px;
-  padding: 24px;
-  max-width: 500px;
+  background-color: white;
+  border-radius: 8px;
+  padding: 20px;
   width: 90%;
+  max-width: 480px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-}
-.buttonGroup {
-  margin-top: 8px;
-  display: flex;
-  gap: 10px;
-}
-
-.deleteButton {
-  background-color: #e74c3c;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.deleteButton:hover {
-  background-color: #c0392b;
 }
