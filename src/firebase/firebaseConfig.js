@@ -7,7 +7,7 @@ const firebaseConfig = {
   apiKey: 'AIzaSyDTDiAGbCKSkNZLn-AI8iBM3p81PErVVG8',
   authDomain: 'appanimelist.firebaseapp.com',
   projectId: 'appanimelist',
-  storageBucket: 'appanimelist.appspot.com', // ← 修正ポイント
+  storageBucket: 'appanimelist.appspot.com',
   messagingSenderId: '154171206123',
   appId: '1:154171206123:web:2ac72e54badfa19d5351ae',
 };

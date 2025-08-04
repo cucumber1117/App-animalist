@@ -1,59 +1,85 @@
-import React, { useState } from 'react';
-import styles from './UIDsearch.module.css';
+import React, { useState, useEffect } from 'react';
 import { db, auth } from '../../firebase/firebaseConfig';
-import { doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
+import styles from './UIDsearch.module.css';
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  doc,
+  updateDoc,
+  arrayUnion,
+} from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
 
 const UIDsearch = () => {
   const [inputUid, setInputUid] = useState('');
   const [foundUser, setFoundUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
   const [message, setMessage] = useState('');
 
-  const currentUser = auth.currentUser;
-  if (!currentUser) return <p>ログインしてください</p>;
+  // 現在ログイン中のユーザー取得
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setCurrentUser(user);
+      } else {
+        setCurrentUser(null);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
+  // UID検索
   const handleSearch = async () => {
-    if (inputUid.trim() === '') {
+    if (!inputUid.trim()) {
       setMessage('UIDを入力してください');
       setFoundUser(null);
       return;
     }
 
-    if (inputUid === currentUser.uid) {
-      setMessage('自分のUIDは検索できません');
+    if (inputUid === currentUser?.uid || inputUid === currentUser?.customUID) {
+      setMessage('自分自身は検索できません');
       setFoundUser(null);
       return;
     }
 
     try {
-      const docRef = doc(db, 'users', inputUid);
-      const docSnap = await getDoc(docRef);
+      const q = query(
+        collection(db, 'users'),
+        where('customUID', '==', inputUid)
+      );
+      const snapshot = await getDocs(q);
 
-      if (docSnap.exists()) {
-        setFoundUser(docSnap.data());
+      if (!snapshot.empty) {
+        const docSnap = snapshot.docs[0];
+        setFoundUser({ id: docSnap.id, ...docSnap.data() });
         setMessage('');
       } else {
         setFoundUser(null);
-        setMessage('ユーザーが見つかりません');
+        setMessage('該当ユーザーが見つかりません');
       }
-    } catch (error) {
+    } catch (err) {
+      console.error('検索エラー:', err);
+      setMessage('エラーが発生しました');
       setFoundUser(null);
-      setMessage('検索中にエラーが発生しました');
-      console.error(error);
     }
   };
 
+  // フレンド追加
   const handleAddFriend = async () => {
-    if (!foundUser) return;
+    if (!foundUser || !currentUser) return;
 
     try {
-      // 自分のfriendsに追加
       const myDocRef = doc(db, 'users', currentUser.uid);
+      const friendDocRef = doc(db, 'users', foundUser.id);
+
+      // 自分 → 相手
       await updateDoc(myDocRef, {
-        friends: arrayUnion(inputUid),
+        friends: arrayUnion(foundUser.customUID),
       });
 
-      // 相手のfriendsにも自分を追加（相互フレンド）
-      const friendDocRef = doc(db, 'users', inputUid);
+      // 相手 → 自分
       await updateDoc(friendDocRef, {
         friends: arrayUnion(currentUser.uid),
       });
@@ -61,9 +87,9 @@ const UIDsearch = () => {
       setMessage(`「${foundUser.name}」をフレンドに追加しました！`);
       setFoundUser(null);
       setInputUid('');
-    } catch (error) {
+    } catch (err) {
+      console.error('フレンド追加エラー:', err);
       setMessage('フレンド追加に失敗しました');
-      console.error(error);
     }
   };
 
@@ -72,9 +98,9 @@ const UIDsearch = () => {
       <h2 className={styles.title}>UIDでフレンド検索</h2>
       <input
         type="text"
-        placeholder="フレンドのUIDを入力"
         value={inputUid}
         onChange={(e) => setInputUid(e.target.value)}
+        placeholder="カスタムUID（例:888756541）"
         className={styles.input}
       />
       <button onClick={handleSearch} className={styles.searchButton}>
@@ -85,9 +111,10 @@ const UIDsearch = () => {
 
       {foundUser && (
         <div className={styles.result}>
-          <p><strong>ユーザー名:</strong> {foundUser.name}</p>
+          <p><strong>名前:</strong> {foundUser.name}</p>
+          <p><strong>UID:</strong> {foundUser.customUID}</p>
           <button onClick={handleAddFriend} className={styles.addButton}>
-            フレンドに追加
+            フレンド追加
           </button>
         </div>
       )}

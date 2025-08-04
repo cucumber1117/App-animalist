@@ -9,6 +9,7 @@ import MemoAdd from './pages/MemoAdd/MemoAdd';
 import Login from './pages/Login/Login';
 import SignUp from './pages/SignUp/SignUp';
 import UIDsearch from './pages/UIDsearch/UIDsearch';
+import FriendList from './pages/FriendList/FriendList';
 import { MemoProvider } from './context/MemoContext';
 import styles from './App.module.css';
 
@@ -21,6 +22,7 @@ const App = () => {
           <NavLink to="/add" className={({ isActive }) => (isActive ? styles.active : '')}>記録</NavLink>
           <NavLink to="/history" className={({ isActive }) => (isActive ? styles.active : '')}>履歴</NavLink>
           <NavLink to="/UIDsearch" className={({ isActive }) => (isActive ? styles.active : '')}>UID検索</NavLink>
+          <NavLink to="/FriendList">フレンド一覧</NavLink>
           <NavLink to="/settings" className={({ isActive }) => (isActive ? styles.active : '')}>設定</NavLink>
         </nav>
 
@@ -35,6 +37,7 @@ const App = () => {
             <Route path="/login" element={<Login />} />
             <Route path="/sign-up" element={<SignUp />} />
             <Route path="/UIDsearch" element={<UIDsearch />} />
+            <Route path="/FriendList" element={<FriendList />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </main>
