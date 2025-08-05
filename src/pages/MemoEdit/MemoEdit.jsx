@@ -1,6 +1,8 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { MemoContext } from '../../context/MemoContext';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import styles from './MemoEdit.module.css';
 
 const MemoEdit = () => {
@@ -10,23 +12,47 @@ const MemoEdit = () => {
 
   const memo = memoItems.find(item => item.id === id);
 
+  // 日付は Date型で管理（react-datepicker は Date 型を使う）
   const [title, setTitle] = useState('');
   const [rating, setRating] = useState('');
   const [note, setNote] = useState('');
+  const [date, setDate] = useState(new Date()); // DatePicker用にDate型で初期化
 
   useEffect(() => {
     if (memo) {
       setTitle(memo.title);
       setRating(memo.rating);
       setNote(memo.note);
+
+      if (memo.date) {
+        setDate(new Date(memo.date));
+      } else {
+        setDate(new Date());
+      }
     }
   }, [memo]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!title || !rating || !note) return;
 
-    updateMemo(id, { title, rating, note, date: new Date().toISOString() });
+    if (!title.trim()) {
+      alert('タイトルは必須です');
+      return;
+    }
+
+    const ratingNum = Number(rating);
+    if (rating !== '' && (isNaN(ratingNum) || ratingNum < 1 || ratingNum > 10)) {
+      alert('評価は1から10の数字で入力してください');
+      return;
+    }
+
+    updateMemo(id, {
+      title: title.trim(),
+      rating: rating !== '' ? ratingNum : '',
+      note: note.trim(),
+      date: date ? date.toISOString() : new Date().toISOString(),
+    });
+
     navigate('/history');
   };
 
@@ -62,6 +88,19 @@ const MemoEdit = () => {
           onChange={e => setNote(e.target.value)}
           rows="5"
           className={styles.textarea}
+        />
+
+        <label className={styles.label}>日付</label>
+        <DatePicker
+          selected={date}
+          onChange={setDate}
+          className={styles.input}
+          calendarClassName={styles.centeredCalendar}
+          dateFormat="yyyy-MM-dd"
+          showYearDropdown
+          scrollableYearDropdown
+          yearDropdownItemNumber={50}
+          maxDate={new Date()}
         />
 
         <button type="submit" className={styles.button}>保存</button>

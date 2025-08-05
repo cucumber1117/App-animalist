@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';  // ← ここを変更
 import { MemoContext } from '../../context/MemoContext';
 import styles from './History.module.css';
 import Filter from '../Filter/Filter';
@@ -35,6 +35,8 @@ const History = () => {
     selectedMonths: new Set(),
     selectedRatings: new Set(),
   });
+
+  const navigate = useNavigate(); // ← ここでnavigateフックを取得
 
   const filteredMemos = memoItems.filter((memo) => {
     const titleMatch =
@@ -88,8 +90,15 @@ const History = () => {
               <div><strong>メモ:</strong> {memo.note}</div>
               <div><strong>日付:</strong> {formatDate(memo.date)}</div>
               <div className={styles.buttonGroup}>
-                <Link to={`/edit/${memo.id}`} className={styles.actionButton}>編集</Link>
                 <button
+                  type="button"
+                  className={styles.actionButton}
+                  onClick={() => navigate(`/edit/${memo.id}`)}  // ← ここをLinkの代わりにnavigateへ
+                >
+                  編集
+                </button>
+                <button
+                  type="button"
                   className={styles.actionButton}
                   onClick={() => {
                     if (window.confirm('本当に削除しますか？')) {
