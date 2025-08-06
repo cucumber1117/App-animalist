@@ -87,13 +87,13 @@ const History = () => {
             <li key={memo.id} className={styles.listItem}>
               <div><strong>タイトル:</strong> {memo.title}</div>
               <div><strong>評価:</strong> {memo.rating}/10</div>
-              <div><strong>メモ:</strong> {memo.note}</div>
               <div><strong>日付:</strong> {formatDate(memo.date)}</div>
+              <div><strong>メモ:</strong> {memo.note}</div>
               <div className={styles.buttonGroup}>
                 <button
                   type="button"
                   className={styles.actionButton}
-                  onClick={() => navigate(`/edit/${memo.id}`)}  // ← ここをLinkの代わりにnavigateへ
+                  onClick={() => navigate(`/edit/${memo.id}`)}
                 >
                   編集
                 </button>

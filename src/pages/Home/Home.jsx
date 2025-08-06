@@ -8,12 +8,13 @@ const Home = () => {
   const pages = [
     { label: '視聴履歴', path: '/history', emoji: '📖' },
     { label: '視聴記録を追加', path: '/add', emoji: '✍️' },
+    { label: 'UID検索', path: '/UIDsearch', emoji: '🔍' },
+    { label: 'フレンド', path: '/FriendList', emoji: '👥' },
     { label: '設定', path: '/settings', emoji: '⚙️' },
   ];
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>🎬 アニメ視聴管理</h1>
       <div className={styles.buttonGrid}>
         {pages.map((page, index) => (
           <button key={index} className={styles.card} onClick={() => navigate(page.path)}>

@@ -1,6 +1,7 @@
 .container {
     margin-bottom: 16px;
     text-align: center;
+    padding-bottom: 70px;
   }
   
   .friendButton {
@@ -8,7 +9,7 @@
     align-items: center;
     gap: 12px;
     padding: 8px 16px;
-    background-color: #007bff;
+    background-color: #00d0ff;
     color: white;
     border: none;
     border-radius: 8px;
@@ -19,7 +20,7 @@
   
   .friendButton:hover,
   .friendButton:focus {
-    background-color: #0056b3;
+    background-color: #86a8e7;
     outline: none;
   }
   
