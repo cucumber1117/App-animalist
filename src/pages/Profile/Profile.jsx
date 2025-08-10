@@ -78,18 +78,29 @@ const Profile = () => {
 
   useEffect(() => {
     if (memoItems && memoItems.length > 0) {
-      const uniqueTitles = Array.from(
-        new Set(
-          memoItems
-            .map((memo) => memo.title.trim())
-            .filter((title) => title !== '')
-        )
-      ).slice(0, 4);
-      setRecentAnimesFromHistory(uniqueTitles);
+      // 日付が新しい順に並び替え
+      const sortedByDate = [...memoItems].sort(
+        (a, b) => new Date(b.date) - new Date(a.date)
+      );
+  
+      // タイトルの重複を除きつつ、最大4件取得
+      const uniqueRecent = [];
+      const seen = new Set();
+      for (const memo of sortedByDate) {
+        const title = memo.title.trim();
+        if (title && !seen.has(title)) {
+          seen.add(title);
+          uniqueRecent.push(title);
+        }
+        if (uniqueRecent.length >= 4) break;
+      }
+  
+      setRecentAnimesFromHistory(uniqueRecent);
     } else {
       setRecentAnimesFromHistory([]);
     }
   }, [memoItems]);
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
