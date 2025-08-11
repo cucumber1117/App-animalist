@@ -11,6 +11,7 @@ import SignUp from './pages/SignUp/SignUp';
 import UIDsearch from './pages/UIDsearch/UIDsearch';
 import FriendList from './pages/FriendList/FriendList';
 import Profile from './pages/Profile/Profile';
+import Recommend from './pages/Recommend/Recommend';
 import { MemoProvider } from './context/MemoContext';
 import styles from './App.module.css';
 
@@ -76,6 +77,7 @@ const App = () => {
             <Route path="/UIDsearch" element={<UIDsearch />} />
             <Route path="/FriendList" element={<FriendList />} />
             <Route path="/Profile" element={<Profile />} />
+            <Route path="/Recommend" element={<Recommend />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </main>

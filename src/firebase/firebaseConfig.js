@@ -1,4 +1,4 @@
-import { initializeApp } from 'firebase/app';
+import { initializeApp, getApps } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
@@ -11,11 +11,11 @@ const firebaseConfig = {
   appId: '1:154171206123:web:2ac72e54badfa19d5351ae',
 };
 
-// Firebase 初期化
-const app = initializeApp(firebaseConfig);
+// Firebase 初期化（既に初期化済みなら再利用）
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
 
 // 必要なサービスを取得
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-export { auth, db};
+export { auth, db };

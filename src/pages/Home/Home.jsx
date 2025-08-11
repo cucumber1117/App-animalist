@@ -10,6 +10,7 @@ const Home = () => {
     { label: '視聴記録を追加', path: '/add', emoji: '✍️' },
     { label: 'UID検索', path: '/UIDsearch', emoji: '🔍' },
     { label: 'フレンド', path: '/FriendList', emoji: '👥' },
+    { label: 'おすすめ', path: '/Recommend', emoji: '⭐' },
     { label: '設定', path: '/settings', emoji: '⚙️' },
   ];
 
