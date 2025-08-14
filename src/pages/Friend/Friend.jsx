@@ -6,29 +6,23 @@ import { db } from '../../firebase/firebaseConfig';
 const Friend = ({ friendUid }) => {
   const [friendData, setFriendData] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
+  const [closing, setClosing] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!friendUid) {
-      console.log('friendUidがないため処理中断');
-      return;
-    }
+    if (!friendUid) return;
 
     const fetchFriendData = async () => {
       setLoading(true);
       try {
-        console.log(`Firestoreからクエリ検索開始: customUID == ${friendUid}`);
         const q = query(
           collection(db, 'users'),
           where('customUID', '==', friendUid)
         );
         const querySnapshot = await getDocs(q);
         if (!querySnapshot.empty) {
-          const doc = querySnapshot.docs[0];
-          console.log('ドキュメント取得成功:', doc.data());
-          setFriendData(doc.data());
+          setFriendData(querySnapshot.docs[0].data());
         } else {
-          console.log('ドキュメントが存在しません');
           setFriendData(null);
         }
       } catch (error) {
@@ -44,12 +38,20 @@ const Friend = ({ friendUid }) => {
   if (loading) return <p>読み込み中...</p>;
   if (!friendData) return null;
 
+  const handleClose = () => {
+    setClosing(true);
+    setTimeout(() => {
+      setClosing(false);
+      setShowDetails(false);
+    }, 300);
+  };
+
   return (
     <div className={styles.container}>
+      {/* フレンドボタンは変更なし */}
       <button
         className={styles.friendButton}
-        onClick={() => setShowDetails(prev => !prev)}
-        aria-expanded={showDetails}
+        onClick={() => setShowDetails(true)}
       >
         <img
           src={friendData.photoURL || '/default-avatar.png'}
@@ -60,20 +62,44 @@ const Friend = ({ friendUid }) => {
       </button>
 
       {showDetails && (
-        <div className={styles.details}>
-          <p><strong>UID:</strong> {friendData.customUID || '未設定'}</p>
-          <p><strong>ステータスメッセージ:</strong> {friendData.statusMessage || 'なし'}</p>
-          <p><strong>好きなアニメ:</strong> {friendData.favoriteAnime || '未登録'}</p>
-          <p><strong>最近見たアニメ:</strong></p>
-          {friendData.recentAnimes && friendData.recentAnimes.length > 0 ? (
-            <ul className={styles.animeList}>
-              {friendData.recentAnimes.slice(0, 4).map((anime, idx) => (
-                <li key={idx}>{anime}</li>
-              ))}
-            </ul>
-          ) : (
-            <p>データなし</p>
-          )}
+        <div className={styles.modalOverlay} onClick={handleClose}>
+          <div
+            className={`${styles.modalContent} ${
+              closing ? styles.slideDown : styles.slideUp
+            }`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className={styles.title}>{friendData.name || '名前なし'}</h2>
+
+            <div className={styles.detailsContent}>
+              <p>
+                <strong>UID:</strong>
+                <span className={styles.tag}>{friendData.customUID || '未設定'}</span>
+              </p>
+              <p>
+                <strong>ステータスメッセージ:</strong>
+                <span className={styles.tag}>{friendData.statusMessage || 'なし'}</span>
+              </p>
+              <p>
+                <strong>好きなアニメ:</strong>
+                <span className={styles.tag}>{friendData.favoriteAnime || '未登録'}</span>
+              </p>
+              <p><strong>最近見たアニメ:</strong></p>
+              {friendData.recentAnimes?.length > 0 ? (
+                <ul className={styles.animeList}>
+                  {friendData.recentAnimes.slice(0, 4).map((anime, idx) => (
+                    <li key={idx}>{anime}</li>
+                  ))}
+                </ul>
+              ) : (
+                <span className={styles.tag}>データなし</span>
+              )}
+            </div>
+
+            <button className={styles.closeButton} onClick={handleClose}>
+              閉じる
+            </button>
+          </div>
         </div>
       )}
     </div>

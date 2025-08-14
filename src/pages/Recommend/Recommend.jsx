@@ -12,6 +12,9 @@ import {
   serverTimestamp,
   orderBy,
   onSnapshot,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
 } from 'firebase/firestore';
 import styles from './Recommend.module.css';
 import { MemoContext } from '../../context/MemoContext';
@@ -28,7 +31,7 @@ const Recommend = () => {
 
   const [recommendationsReceived, setRecommendationsReceived] = useState([]);
 
-  // ログイン状態監視 & ユーザーデータ取得（フレンドリスト取得）
+  // ログイン状態監視 & フレンドリスト取得
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (u) => {
       if (!u) {
@@ -82,16 +85,20 @@ const Recommend = () => {
       orderBy('createdAt', 'desc')
     );
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const recs = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setRecommendationsReceived(recs);
-    }, (error) => {
-      console.error('おすすめ取得失敗:', error);
-      setRecommendationsReceived([]);
-    });
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const recs = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setRecommendationsReceived(recs);
+      },
+      (error) => {
+        console.error('おすすめ取得失敗:', error);
+        setRecommendationsReceived([]);
+      }
+    );
 
     return () => unsubscribe();
   }, [user]);
@@ -127,10 +134,44 @@ const Recommend = () => {
     setLoadingSend(false);
   };
 
+  const handleAddToMyList = async (animeTitle) => {
+    if (!user) return alert('ログインが必要です');
+
+    try {
+      const userRef = doc(db, 'users', user.uid);
+      await updateDoc(userRef, {
+        myList: arrayUnion({
+          title: animeTitle,
+          addedAt: new Date().toISOString(),
+        }),
+      });
+      alert(`${animeTitle} をマイリストに追加しました`);
+    } catch (err) {
+      console.error('マイリスト追加失敗:', err);
+      alert('マイリスト追加に失敗しました');
+    }
+  };
+
+  const handleRemoveFromMyList = async (animeTitle) => {
+    if (!user) return alert('ログインが必要です');
+
+    try {
+      const userRef = doc(db, 'users', user.uid);
+      await updateDoc(userRef, {
+        myList: arrayRemove({ title: animeTitle }),
+      });
+      alert(`${animeTitle} をマイリストから削除しました`);
+    } catch (err) {
+      console.error('マイリスト削除失敗:', err);
+      alert('削除に失敗しました');
+    }
+  };
+
   return (
     <div className={styles.container}>
       <h2>おすすめ</h2>
 
+      {/* フレンドにおすすめを送る */}
       <section className={styles.section}>
         <h3>フレンドにおすすめする</h3>
         <select
@@ -176,6 +217,7 @@ const Recommend = () => {
         </button>
       </section>
 
+      {/* フレンドからのおすすめ */}
       <section className={styles.section}>
         <h3>フレンドからのおすすめ</h3>
         {recommendationsReceived.length === 0 ? (
@@ -189,6 +231,20 @@ const Recommend = () => {
                 {rec.reason && (
                   <div><strong>おすすめどころ:</strong> {rec.reason}</div>
                 )}
+                <div className={styles.buttonGroup}>
+                  <button
+                    className={styles.addButton}
+                    onClick={() => handleAddToMyList(rec.animeTitle)}
+                  >
+                    マイリストに追加
+                  </button>
+                  <button
+                    className={styles.deleteButton}
+                    onClick={() => handleRemoveFromMyList(rec.animeTitle)}
+                  >
+                    削除
+                  </button>
+                </div>
               </li>
             ))}
           </ul>

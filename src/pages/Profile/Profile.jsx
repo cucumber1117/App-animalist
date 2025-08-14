@@ -1,11 +1,10 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { MemoContext } from '../../context/MemoContext';
-import { auth, db} from '../../firebase/firebaseConfig';
+import { auth, db } from '../../firebase/firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc, updateDoc, setDoc } from 'firebase/firestore';
 import styles from './Profile.module.css';
 import { useNavigate } from 'react-router-dom';
-
 
 const Profile = () => {
   const { memoItems } = useContext(MemoContext);
@@ -22,6 +21,7 @@ const Profile = () => {
   const [recentAnimesFromHistory, setRecentAnimesFromHistory] = useState([]);
   const navigate = useNavigate();
 
+  // ログインユーザー取得＆Firestoreユーザードキュメント取得
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
@@ -40,7 +40,7 @@ const Profile = () => {
             isRecentAnimesPublic: data.isRecentAnimesPublic ?? false,
           });
         } else {
-          await setDoc(doc(db, 'users', currentUser.uid), {
+          const initialData = {
             name: currentUser.displayName || '',
             photoURL: currentUser.photoURL || '',
             statusMessage: '',
@@ -49,20 +49,12 @@ const Profile = () => {
             isRecentAnimesPublic: false,
             customUID: '',
             email: currentUser.email || '',
-          });
-          setProfile({
-            name: currentUser.displayName || '',
-            photoURL: currentUser.photoURL || '',
-            statusMessage: '',
-            favoriteAnime: '',
-            isFavoriteAnimePublic: false,
-            isRecentAnimesPublic: false,
-            customUID: '',
-            email: currentUser.email || '',
-          });
+          };
+          await setDoc(docRef, initialData);
+          setProfile(initialData);
           setEditProfile({
-            name: currentUser.displayName || '',
-            photoURL: currentUser.photoURL || '',
+            name: initialData.name,
+            photoURL: initialData.photoURL,
             statusMessage: '',
             favoriteAnime: '',
             isFavoriteAnimePublic: false,
@@ -76,14 +68,12 @@ const Profile = () => {
     return () => unsubscribe();
   }, [navigate]);
 
+  // memoItemsから最近見たアニメを抽出（最大4件、重複除去）
   useEffect(() => {
     if (memoItems && memoItems.length > 0) {
-      // 日付が新しい順に並び替え
       const sortedByDate = [...memoItems].sort(
         (a, b) => new Date(b.date) - new Date(a.date)
       );
-  
-      // タイトルの重複を除きつつ、最大4件取得
       const uniqueRecent = [];
       const seen = new Set();
       for (const memo of sortedByDate) {
@@ -94,13 +84,35 @@ const Profile = () => {
         }
         if (uniqueRecent.length >= 4) break;
       }
-  
       setRecentAnimesFromHistory(uniqueRecent);
     } else {
       setRecentAnimesFromHistory([]);
     }
   }, [memoItems]);
-  
+
+  // memoItems or 公開設定が変化したら自動更新＆UI反映
+  useEffect(() => {
+    if (!user) return;
+
+    const updateRecentAnimes = async () => {
+      if (!editProfile.isRecentAnimesPublic) return;
+
+      const docRef = doc(db, 'users', user.uid);
+      try {
+        await updateDoc(docRef, {
+          recentAnimes: recentAnimesFromHistory,
+        });
+        setProfile((prevProfile) => ({
+          ...prevProfile,
+          recentAnimes: recentAnimesFromHistory,
+        }));
+      } catch (error) {
+        console.error('最近見たアニメ自動更新失敗:', error);
+      }
+    };
+
+    updateRecentAnimes();
+  }, [recentAnimesFromHistory, editProfile.isRecentAnimesPublic, user]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

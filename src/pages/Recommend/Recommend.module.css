@@ -81,4 +81,37 @@
   .recommendItem div {
     margin-bottom: 6px;
   }
+  .buttonGroup {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  
+  .addButton {
+    padding: 6px 12px;
+    font-size: 14px;
+    background-color: #2196f3;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .addButton:hover {
+    background-color: #1976d2;
+  }
+  .deleteButton {
+    padding: 6px 12px;
+    font-size: 14px;
+    background-color: #e53935;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .deleteButton:hover {
+    background-color: #d32f2f;
+  }
+  
   

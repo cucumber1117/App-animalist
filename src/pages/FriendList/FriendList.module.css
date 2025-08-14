@@ -20,5 +20,15 @@
     outline: none;
     box-shadow: 0 0 0 3px rgba(215, 209, 32, 0.6);
   }
+  .friendListContainer {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .friendItem {
+    margin: 0;
+    padding: 0;
+  }
+  
   
   

@@ -12,6 +12,7 @@ import UIDsearch from './pages/UIDsearch/UIDsearch';
 import FriendList from './pages/FriendList/FriendList';
 import Profile from './pages/Profile/Profile';
 import Recommend from './pages/Recommend/Recommend';
+import Mylist from './pages/Mylist/Mylist';
 import { MemoProvider } from './context/MemoContext';
 import styles from './App.module.css';
 
@@ -78,6 +79,7 @@ const App = () => {
             <Route path="/FriendList" element={<FriendList />} />
             <Route path="/Profile" element={<Profile />} />
             <Route path="/Recommend" element={<Recommend />} />
+            <Route path="/Mylist" element={<Mylist />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </main>

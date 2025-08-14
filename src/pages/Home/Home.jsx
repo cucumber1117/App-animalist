@@ -12,6 +12,7 @@ const Home = () => {
     { label: 'フレンド', path: '/FriendList', emoji: '👥' },
     { label: 'おすすめ', path: '/Recommend', emoji: '⭐' },
     { label: '設定', path: '/settings', emoji: '⚙️' },
+    { label: 'マイリスト', path: '/Mylist', emoji: '📂' },
   ];
 
   return (

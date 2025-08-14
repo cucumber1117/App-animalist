@@ -48,19 +48,29 @@ const FriendList = () => {
 
   return (
     <div>
-      <h2>フレンド一覧</h2>
-      <button className={styles.addButton}onClick={() => navigate('/UIDsearch')}>
-        フレンドを追加する
-      </button>
+  <h2>フレンド一覧</h2>
+  <button
+    className={styles.addButton}
+    onClick={() => navigate('/UIDsearch')}
+  >
+    フレンドを追加する
+  </button>
 
-      {friendsCustomUIDs.length === 0 ? (
-        <p>フレンドがいません</p>
-      ) : (
-        friendsCustomUIDs.map((customUID) =>
-          customUID ? <Friend key={customUID} friendUid={customUID} /> : null
-        )
+  {friendsCustomUIDs.length === 0 ? (
+    <p>フレンドがいません</p>
+  ) : (
+    <div className={styles.friendListContainer}>
+      {friendsCustomUIDs.map((customUID) =>
+        customUID ? (
+          <div key={customUID} className={styles.friendItem}>
+            <Friend friendUid={customUID} />
+          </div>
+        ) : null
       )}
     </div>
+  )}
+</div>
+
   );
 };
 
