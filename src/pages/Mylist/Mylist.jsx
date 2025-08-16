@@ -8,6 +8,7 @@ const Mylist = () => {
   const [user, setUser] = useState(null);
   const [newTitle, setNewTitle] = useState('');
   const [myList, setMyList] = useState([]);
+  const [errorMessage, setErrorMessage] = useState(''); // エラーメッセージ用
 
   // ログインユーザー取得＆Firestoreから既存リスト取得
   useEffect(() => {
@@ -34,6 +35,13 @@ const Mylist = () => {
     const trimmedTitle = (title || newTitle).trim();
     if (!trimmedTitle || !user) return;
 
+    // 重複チェック
+    const isDuplicate = myList.some((item) => item.title === trimmedTitle);
+    if (isDuplicate) {
+      setErrorMessage('重複しています');
+      return;
+    }
+
     const newItem = {
       title: trimmedTitle,
       addedAt: new Date().toISOString(),
@@ -41,7 +49,8 @@ const Mylist = () => {
 
     const updatedList = [...myList, newItem];
     setMyList(updatedList);
-    if (!title) setNewTitle('');
+    setNewTitle('');
+    setErrorMessage('');
 
     try {
       const docRef = doc(db, 'users', user.uid);
@@ -81,6 +90,8 @@ const Mylist = () => {
           リストを追加
         </button>
       </div>
+
+      {errorMessage && <p className={styles.error}>{errorMessage}</p>}
 
       <div className={styles.listArea}>
         {myList.length === 0 ? (

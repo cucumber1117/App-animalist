@@ -47,6 +47,7 @@ const Profile = () => {
             favoriteAnime: '',
             isFavoriteAnimePublic: false,
             isRecentAnimesPublic: false,
+            recentAnimes: [],   // 初期は空
             customUID: '',
             email: currentUser.email || '',
           };
@@ -90,13 +91,12 @@ const Profile = () => {
     }
   }, [memoItems]);
 
-  // memoItems or 公開設定が変化したら自動更新＆UI反映
+  // 公開ONのときのみ Firestore を自動更新
   useEffect(() => {
     if (!user) return;
+    if (!editProfile.isRecentAnimesPublic) return;
 
     const updateRecentAnimes = async () => {
-      if (!editProfile.isRecentAnimesPublic) return;
-
       const docRef = doc(db, 'users', user.uid);
       try {
         await updateDoc(docRef, {
@@ -141,10 +141,18 @@ const Profile = () => {
         favoriteAnime: editProfile.favoriteAnime,
         isFavoriteAnimePublic: editProfile.isFavoriteAnimePublic,
         isRecentAnimesPublic: editProfile.isRecentAnimesPublic,
-        recentAnimes: recentAnimesFromHistory,
+        recentAnimes: editProfile.isRecentAnimesPublic
+          ? recentAnimesFromHistory  // 公開 → 履歴を保存
+          : [],                       // 非公開 → 空配列にする
       });
       alert('プロフィールを保存しました');
-      setProfile({ ...profile, ...editProfile });
+      setProfile({
+        ...profile,
+        ...editProfile,
+        recentAnimes: editProfile.isRecentAnimesPublic
+          ? recentAnimesFromHistory
+          : [],
+      });
     } catch (error) {
       console.error(error);
       alert('プロフィール保存に失敗しました');
@@ -210,9 +218,9 @@ const Profile = () => {
       {/* 最近見たアニメ */}
       <label>最近見たアニメ（最大4つ）</label>
       {editProfile.isRecentAnimesPublic ? (
-        recentAnimesFromHistory.length > 0 ? (
+        profile.recentAnimes && profile.recentAnimes.length > 0 ? (
           <ul className={styles.animeList}>
-            {recentAnimesFromHistory.map((anime, idx) => (
+            {profile.recentAnimes.map((anime, idx) => (
               <li key={idx}>{anime}</li>
             ))}
           </ul>

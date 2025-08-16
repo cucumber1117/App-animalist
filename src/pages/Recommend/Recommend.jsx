@@ -13,8 +13,6 @@ import {
   orderBy,
   onSnapshot,
   updateDoc,
-  arrayUnion,
-  arrayRemove,
 } from 'firebase/firestore';
 import styles from './Recommend.module.css';
 import { MemoContext } from '../../context/MemoContext';
@@ -103,6 +101,7 @@ const Recommend = () => {
     return () => unsubscribe();
   }, [user]);
 
+  // おすすめ送信
   const handleSendRecommendation = async () => {
     if (!selectedFriend || !selectedAnime) {
       alert('フレンドとアニメを選択してください');
@@ -134,17 +133,30 @@ const Recommend = () => {
     setLoadingSend(false);
   };
 
+  // マイリスト追加（重複チェック付き）
   const handleAddToMyList = async (animeTitle) => {
     if (!user) return alert('ログインが必要です');
 
     try {
       const userRef = doc(db, 'users', user.uid);
+      const userSnap = await getDoc(userRef);
+      if (!userSnap.exists()) return alert('ユーザーデータが存在しません');
+
+      const currentList = userSnap.data().myList || [];
+
+      const isDuplicate = currentList.some(
+        (item) => item.title.toLowerCase() === animeTitle.toLowerCase()
+      );
+      if (isDuplicate) {
+        alert('すでにマイリストに存在します');
+        return;
+      }
+
+      const newItem = { title: animeTitle, addedAt: new Date().toISOString() };
       await updateDoc(userRef, {
-        myList: arrayUnion({
-          title: animeTitle,
-          addedAt: new Date().toISOString(),
-        }),
+        myList: [...currentList, newItem],
       });
+
       alert(`${animeTitle} をマイリストに追加しました`);
     } catch (err) {
       console.error('マイリスト追加失敗:', err);
@@ -152,14 +164,21 @@ const Recommend = () => {
     }
   };
 
+  // マイリスト削除
   const handleRemoveFromMyList = async (animeTitle) => {
     if (!user) return alert('ログインが必要です');
 
     try {
       const userRef = doc(db, 'users', user.uid);
-      await updateDoc(userRef, {
-        myList: arrayRemove({ title: animeTitle }),
-      });
+      const userSnap = await getDoc(userRef);
+      if (!userSnap.exists()) return;
+
+      const currentList = userSnap.data().myList || [];
+      const updatedList = currentList.filter(
+        (item) => item.title.toLowerCase() !== animeTitle.toLowerCase()
+      );
+
+      await updateDoc(userRef, { myList: updatedList });
       alert(`${animeTitle} をマイリストから削除しました`);
     } catch (err) {
       console.error('マイリスト削除失敗:', err);
