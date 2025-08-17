@@ -13,6 +13,7 @@ import {
   orderBy,
   onSnapshot,
   updateDoc,
+  deleteDoc,
 } from 'firebase/firestore';
 import styles from './Recommend.module.css';
 import { MemoContext } from '../../context/MemoContext';
@@ -164,24 +165,15 @@ const Recommend = () => {
     }
   };
 
-  // マイリスト削除
-  const handleRemoveFromMyList = async (animeTitle) => {
+  // おすすめ削除
+  const handleDeleteRecommendation = async (recId) => {
     if (!user) return alert('ログインが必要です');
 
     try {
-      const userRef = doc(db, 'users', user.uid);
-      const userSnap = await getDoc(userRef);
-      if (!userSnap.exists()) return;
-
-      const currentList = userSnap.data().myList || [];
-      const updatedList = currentList.filter(
-        (item) => item.title.toLowerCase() !== animeTitle.toLowerCase()
-      );
-
-      await updateDoc(userRef, { myList: updatedList });
-      alert(`${animeTitle} をマイリストから削除しました`);
+      await deleteDoc(doc(db, 'recommendations', recId));
+      alert('おすすめを削除しました');
     } catch (err) {
-      console.error('マイリスト削除失敗:', err);
+      console.error('おすすめ削除失敗:', err);
       alert('削除に失敗しました');
     }
   };
@@ -259,7 +251,7 @@ const Recommend = () => {
                   </button>
                   <button
                     className={styles.deleteButton}
-                    onClick={() => handleRemoveFromMyList(rec.animeTitle)}
+                    onClick={() => handleDeleteRecommendation(rec.id)}
                   >
                     削除
                   </button>
