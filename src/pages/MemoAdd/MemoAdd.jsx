@@ -1,19 +1,19 @@
 import React, { useContext, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MemoContext } from '../../context/MemoContext';
-import styles from './MemoAdd.module.css';
 import { v4 as uuidv4 } from 'uuid';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import styles from './MemoAdd.module.css';
 
 const MemoAdd = () => {
   const { addMemo } = useContext(MemoContext);
+  const navigate = useNavigate();
 
-  // 日付は今日を初期値
-  const [date, setDate] = useState(new Date());
   const [title, setTitle] = useState('');
   const [rating, setRating] = useState('');
   const [note, setNote] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+  const [date, setDate] = useState(new Date());
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -23,32 +23,27 @@ const MemoAdd = () => {
       return;
     }
 
+    const ratingNum = Number(rating);
+    if (rating !== '' && (isNaN(ratingNum) || ratingNum < 1 || ratingNum > 10)) {
+      alert('評価は1から10の数字で入力してください');
+      return;
+    }
+
     const newMemo = {
       id: uuidv4(),
       title: title.trim(),
-      rating: rating ? Number(rating) : null,
-      note: note.trim() || '',
+      rating: rating !== '' ? ratingNum : '',
+      note: note.trim(),
       date: date ? date.toISOString() : new Date().toISOString(),
     };
 
     addMemo(newMemo);
-
-    setSuccessMessage('保存完了！！');
-
-    // フォームリセット
-    setTitle('');
-    setRating('');
-    setNote('');
-    setDate(new Date());
-
-    setTimeout(() => {
-      setSuccessMessage('');
-    }, 1000);
+    navigate('/history');
   };
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>🎬 アニメを記録</h1>
+      <h1 className={styles.title}>✍️ 新しいメモを追加</h1>
       <form onSubmit={handleSubmit} className={styles.form}>
         <label className={styles.label}>タイトル</label>
         <input
@@ -62,21 +57,21 @@ const MemoAdd = () => {
         <input
           type="number"
           value={rating}
-          onChange={e => setRating(e.target.value)}
-          className={styles.input}
           min="1"
           max="10"
+          onChange={e => setRating(e.target.value)}
+          className={styles.input}
         />
 
         <label className={styles.label}>メモ</label>
         <textarea
           value={note}
           onChange={e => setNote(e.target.value)}
-          className={styles.textarea}
           rows="5"
+          className={styles.textarea}
         />
 
-        <label className={styles.label}>見た日付</label>
+        <label className={styles.label}>日付</label>
         <DatePicker
           selected={date}
           onChange={setDate}
@@ -89,9 +84,8 @@ const MemoAdd = () => {
           maxDate={new Date()}
         />
 
-        <button type="submit" className={styles.button}>保存</button>
+        <button type="submit" className={styles.button}>追加</button>
       </form>
-      {successMessage && <p className={styles.successMessage}>{successMessage}</p>}
     </div>
   );
 };
